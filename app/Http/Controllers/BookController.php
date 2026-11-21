@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 class BookController extends Controller
 {
-    ///mostrar todos los libros
+    // Mostrar todos los libros
     public function index()
     {
         $books = Book::all();
@@ -19,7 +19,7 @@ class BookController extends Controller
         ], 200);
     }
 
-    ///mostrar libro por id
+    // Mostrar un libro por ID
     public function show(int $id)
     {
         $book = Book::find($id);
@@ -36,7 +36,7 @@ class BookController extends Controller
         ], 200);
     }
 
-    ///registra libro nuevo
+    // Registrar un libro
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -56,7 +56,7 @@ class BookController extends Controller
         ], 201);
     }
 
-    ///actualizar libro existente
+    // Actualizar un libro
     public function update(Request $request, int $id)
     {
         $book = Book::find($id);
@@ -79,8 +79,17 @@ class BookController extends Controller
             ],
             'descripcion' => 'sometimes|nullable|string',
             'cantidad' => 'sometimes|required|integer|min:1',
-            'disponibles' => 'sometimes|required|integer|min:0|lte:cantidad',
+            'disponibles' => 'sometimes|required|integer|min:0',
         ]);
+
+        $cantidad = $validated['cantidad'] ?? $book->cantidad;
+        $disponibles = $validated['disponibles'] ?? $book->disponibles;
+
+        if ($disponibles > $cantidad) {
+            return response()->json([
+                'message' => 'Los ejemplares disponibles no pueden superar la cantidad total.'
+            ], 422);
+        }
 
         $book->update($validated);
 
@@ -90,11 +99,7 @@ class BookController extends Controller
         ], 200);
     }
 
-
-
-    /**
-     * Eliminar un libro por su ID.
-     */
+    // Eliminar un libro
     public function destroy(int $id)
     {
         $book = Book::find($id);
@@ -111,5 +116,4 @@ class BookController extends Controller
             'message' => 'Libro eliminado correctamente'
         ], 200);
     }
-
 }
