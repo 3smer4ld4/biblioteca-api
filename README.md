@@ -1,66 +1,192 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Biblioteca API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST desarrollada con **Laravel 12** para la gestión de una biblioteca comunitaria. Implementa autenticación mediante JSON Web Tokens (JWT), protección de rutas y operaciones CRUD para administrar libros.
 
-## About Laravel
+## Tecnologías utilizadas
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP
+- Laravel 12
+- SQLite
+- Eloquent ORM
+- JWT Authentication (`tymon/jwt-auth`)
+- Composer
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Funcionalidades
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Autenticación y seguridad
 
-## Learning Laravel
+- Registro de usuarios.
+- Inicio de sesión mediante correo electrónico y contraseña.
+- Contraseñas almacenadas mediante hash.
+- Generación y validación de tokens JWT.
+- Protección de rutas mediante middleware `auth:api`.
+- Consulta del usuario autenticado.
+- Cierre de sesión e invalidación del token.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Requisitos previos
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Antes de instalar el proyecto, asegúrate de tener:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.2 o superior.
+- Composer.
+- Git.
+- Extensiones de PHP necesarias para Laravel y SQLite.
 
-## Laravel Sponsors
+## Instalación
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. Clonar el repositorio
 
-### Premium Partners
+```bash
+git clone https://github.com/3smer4ld4/biblioteca-api
+cd biblioteca-api
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 2. Instalar dependencias
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Crear el archivo de entorno
 
-## Code of Conduct
+En Windows PowerShell:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```powershell
+Copy-Item .env.example .env
+```
 
-## Security Vulnerabilities
+### 4. Generar la clave de Laravel
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan key:generate
+```
 
-## License
+### 5. Configurar SQLite
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+En el archivo `.env`, verificar que estén configuradas estas variables:
+
+```env
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+```
+
+Crear el archivo de base de datos si todavía no existe:
+
+```powershell
+if (!(Test-Path database\database.sqlite)) {
+    New-Item -ItemType File database\database.sqlite
+}
+```
+
+### 6. Generar la clave secreta JWT
+
+```bash
+php artisan jwt:secret
+```
+
+Este comando genera la variable `JWT_SECRET` en el archivo `.env`.
+
+### 7. Ejecutar las migraciones
+
+```bash
+php artisan migrate
+```
+
+### 8. Iniciar el servidor
+
+```bash
+php artisan serve
+```
+
+La API estará disponible en servidor local:
+
+```text
+http://127.0.0.1:8000
+```
+
+## Ejemplos de uso
+
+Las peticiones deben enviarse con el encabezado:
+
+```http
+Accept: application/json
+Content-Type: application/json
+```
+
+### Registrar un usuario
+
+**POST** `/api/auth/register`
+
+```json
+{
+    "name": "Usuariou",
+    "email": "usuario@ejemplo.com",
+    "password": "123",
+    "password_confirmation": "123"
+}
+```
+
+### Iniciar sesión
+
+
+
+**POST (en postman por ejemplo)** `/api/auth/login`
+
+```json
+{
+    "email": "usuario@ejemplo.com",
+    "password": "123"
+}
+```
+
+### Autenticación mediante JWT
+
+En las peticiones protegidas, agregar el encabezado:
+
+```http
+Authorization: Bearer TU_TOKEN_JWT
+```
+
+### Registrar un libro
+
+**POST** `/api/books`
+
+```json
+{
+    "titulo": "Un milenio de compañia",
+    "autor": "Marcos Gabriel",
+    "isbn": "123456789013456789",
+    "descripcion": "Novela del escritor imaginario.",
+    "cantidad": 5,
+    "disponibles": 5
+}
+```
+
+Los campos `titulo`, `autor`, `cantidad` y `disponibles` son obligatorios. El ISBN y la descripción son opcionales.
+
+La cantidad de ejemplares disponibles no puede ser negativa ni superar la cantidad , tampoco decimales.
+
+## Códigos de respuesta HTTP
+
+| Código | Significado |
+|---|---|
+| 200 | Operación realizada correctamente |
+| 201 | Recurso creado correctamente |
+| 401 | No autenticado o credenciales incorrectas |
+| 404 | Recurso no encontrado |
+| 422 | Error de validación |
+
+
+## Consideraciones de seguridad
+
+- Las contraseñas no se almacenan en texto plano.
+- Las rutas privadas requieren un token JWT válido.
+- Las credenciales y claves secretas se configuran mediante variables de entorno.
+- El archivo `.env` no debe publicarse en el repositorio.
+- Cada instalación debe generar sus propias claves de aplicación y JWT.
+
+## Autoría
+
+Proyecto académico desarrollado como parte de la actividad:
+
+**Implementación de Blindaje en APIs: Autenticación con JSON Web Tokens (JWT) y Gestión Segura de Credenciales.**
